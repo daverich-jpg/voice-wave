@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+/* Dark values are sampled from the Figma frame (1341:309). */
+:root {
+  --vw-bg: #131313;
+  --vw-pill: #242425;
+  --vw-pill-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
+  --vw-btn: #353535;
+  --vw-btn-hover: #404041;
+  --vw-primary: #283f94;
+  --vw-primary-hover: #3049a6;
+  --vw-ink: #ffffff;
+  --vw-heading: rgb(255 255 255 / 0.74);
+  --vw-muted: rgb(255 255 255 / 0.42);
+  --vw-focus: #7d93e6;
+  --vw-glow: 72 98 210;
+  --vw-icon-filter: none;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --vw-bg: #f3f3f1;
+    --vw-pill: rgb(255 255 255 / 0.8);
+    --vw-pill-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 0 0 1px rgb(0 0 0 / 0.06);
+    --vw-btn: #ececec;
+    --vw-btn-hover: #e2e2e2;
+    --vw-ink: #161616;
+    --vw-heading: rgb(0 0 0 / 0.74);
+    --vw-muted: rgb(0 0 0 / 0.5);
+    --vw-focus: #283f94;
+    --vw-glow: 90 120 235;
+    --vw-icon-filter: invert(1);
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --vw-bg: #f3f3f1;
+  --vw-pill: rgb(255 255 255 / 0.8);
+  --vw-pill-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 0 0 1px rgb(0 0 0 / 0.06);
+  --vw-btn: #ececec;
+  --vw-btn-hover: #e2e2e2;
+  --vw-ink: #161616;
+  --vw-heading: rgb(0 0 0 / 0.74);
+  --vw-muted: rgb(0 0 0 / 0.5);
+  --vw-focus: #283f94;
+  --vw-glow: 90 120 235;
+  --vw-icon-filter: invert(1);
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background: var(--vw-bg);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease-out;
+}
+
+.vw-icon {
+  filter: var(--vw-icon-filter);
+}
+
+/* Loudness glow: --vw-level is written per frame by the wave loop. */
+.vw-glow {
+  --vw-level: 0;
+  background: radial-gradient(closest-side, rgb(var(--vw-glow) / 0.55), transparent);
+  opacity: 0;
+  transform: scaleY(0.6);
+  transition: opacity 0.4s ease-out;
+}
+.vw-glow[data-state="listening"] {
+  opacity: calc(0.08 + var(--vw-level) * 0.55);
+  transform: scaleY(calc(0.6 + var(--vw-level) * 0.4));
+  transition: none;
+}
+.vw-glow[data-state="processing"] {
+  animation: vw-pulse 1.6s ease-in-out infinite;
+}
+@keyframes vw-pulse {
+  0%, 100% { opacity: 0.06; }
+  50% { opacity: 0.22; }
+}
+
+.vw-spin {
+  animation: vw-spin 0.9s linear infinite;
+}
+@keyframes vw-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vw-glow[data-state="processing"] { animation: none; opacity: 0.12; }
+  .vw-spin { animation-duration: 2.4s; }
+}

@@ -1,0 +1,36 @@
+<!doctype html>
+<!-- Dev-only harness: same app, but frames are stepped by hand so timing
+     tests don't depend on whether the browser is throttling rAF. -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Voice Wave · fake clock</title>
+    <script>
+      (() => {
+        let now = 0, id = 0, queue = new Map();
+        performance.now = () => now;
+        window.requestAnimationFrame = (cb) => (queue.set(++id, cb), id);
+        window.cancelAnimationFrame = (i) => queue.delete(i);
+        // ?motion=full ignores the OS reduced-motion setting, to test the full path.
+        if (new URLSearchParams(location.search).get("motion") === "full") {
+          const mm = window.matchMedia.bind(window);
+          window.matchMedia = (q) =>
+            q.includes("prefers-reduced-motion") ? mm("(max-width: 0px)") : mm(q);
+        }
+        /** Run `frames` frames of `dtMs` each. */
+        window.__flush = (frames = 1, dtMs = 1000 / 60) => {
+          for (let f = 0; f < frames; f++) {
+            now += dtMs;
+            const run = queue; queue = new Map();
+            run.forEach((cb) => cb(now));
+          }
+        };
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
